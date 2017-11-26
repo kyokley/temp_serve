@@ -2,7 +2,7 @@ from flask import (Flask,
                    jsonify,
                    )
 from werkzeug.contrib.fixers import ProxyFix
-from sensor import Sensor
+from temp_serve.sensor import Sensor
 
 app = Flask(__name__, static_url_path='')
 app.wsgi_app = ProxyFix(app.wsgi_app)
