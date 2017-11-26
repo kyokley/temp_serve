@@ -1,5 +1,6 @@
 import unittest
 import mock
+from datetime import datetime, timedelta
 
 from temp_serve.sensor import (Sensor,
                                SensorException,
@@ -73,7 +74,46 @@ class TestSetup(unittest.TestCase):
                           sensor._setup)
 
 class TestRead(unittest.TestCase):
-    pass
+    def setUp(self):
+        self.MINIMUM_UPDATE_TIME_patcher = mock.patch('temp_serve.sensor.MINIMUM_UPDATE_TIME', 30)
+        self.MINIMUM_UPDATE_TIME_patcher.start()
+
+        self.open_patcher = mock.patch('__builtin__.open')
+        self.mock_open = self.open_patcher.start()
+        self.mock_open.return_value.__enter__.return_value.read.return_value = (
+                'asdfasdasdf\n0 1 2 3 4 5 6 7 8 t=50000')
+
+        self.listdir_patcher = mock.patch('temp_serve.sensor.os.listdir')
+        self.mock_listdir = self.listdir_patcher.start()
+
+        self.mock_listdir.return_value = ['test_bus']
+
+        self.sensor = Sensor()
+        self.sensor._last_update = datetime.now()
+        self.sensor._cached_temp = 'test_cached_temp'
+
+    def tearDown(self):
+        self.MINIMUM_UPDATE_TIME_patcher.stop()
+        self.open_patcher.stop()
+
+    def test_no_bus(self):
+        self.sensor._bus = None
+
+        self.assertRaises(SensorException,
+                          self.sensor._read)
+
+    def test_use_cache(self):
+        expected = 'test_cached_temp'
+        actual = self.sensor._read()
+
+        self.assertEqual(expected, actual)
+
+    def test_invalid_cache(self):
+        self.sensor._last_update = datetime.now() - timedelta(seconds=31)
+        expected = 50
+        actual = self.sensor._read()
+
+        self.assertEqual(expected, actual)
 
 class TestGetCelsius(unittest.TestCase):
     def setUp(self):
