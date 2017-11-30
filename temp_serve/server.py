@@ -1,6 +1,6 @@
 import threading
 import time
-import LCD1602
+from lcd import LCD
 
 from flask import (Flask,
                    jsonify,
@@ -12,6 +12,7 @@ app = Flask(__name__, static_url_path='')
 app.wsgi_app = ProxyFix(app.wsgi_app)
 
 sensor = Sensor()
+lcd = LCD()
 
 @app.route('/status/', methods=['GET'])
 @app.route('/status', methods=['GET'])
@@ -27,11 +28,10 @@ def get_temp():
     return jsonify(res)
 
 def run_forever(finished):
-    LCD1602.init(0x27, 1)
-
     while True:
-        LCD1602.write(0, 0, 'Temp: {:d}F'.format(int(sensor.get_fahrenheit())))
-        LCD1602.write(0, 1, '      {:d}C'.format(int(sensor.get_celsius())))
+        lcd.clear()
+        lcd.write(0, 0, 'Temp: {:d}F'.format(int(sensor.get_fahrenheit())))
+        lcd.write(0, 1, '      {:d}C'.format(int(sensor.get_celsius())))
         time.sleep(10)
 
         if finished.isSet():
