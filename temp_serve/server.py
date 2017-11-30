@@ -30,8 +30,8 @@ def run_forever(finished):
     LCD1602.init(0x27, 1)
 
     while True:
-        LCD1602.write(0, 0, 'Fahrenheit: {}F'.format(sensor.get_fahrenheit()))
-        LCD1602.write(5, 1, 'Celsius: {}C'.format(sensor.get_celsius()))
+        LCD1602.write(0, 0, 'Temp: {:d}F'.format(sensor.get_fahrenheit()))
+        LCD1602.write(0, 0, '      {:d}C'.format(sensor.get_celsius()))
         time.sleep(10)
 
         if finished.isSet():
@@ -45,7 +45,6 @@ if __name__ == '__main__':
     thread.start()
 
     app.debug = True
-    #app.run(host=HOST, port=PORT)
-    app.run()
+    app.run(host='0.0,0,0')
 
     finished.set()
