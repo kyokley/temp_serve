@@ -30,8 +30,8 @@ def get_temp():
 def run_forever(finished):
     while True:
         lcd.clear()
-        lcd.write(0, 0, 'Temp: {:d}F'.format(int(sensor.get_fahrenheit())))
-        lcd.write(0, 1, '      {:d}C'.format(int(sensor.get_celsius())))
+        lcd.write(0, 0, 'Temp: {:.3f}F'.format(sensor.get_fahrenheit()))
+        lcd.write(0, 1, '      {:.3f}C'.format(sensor.get_celsius()))
         time.sleep(10)
 
         if finished.isSet():
