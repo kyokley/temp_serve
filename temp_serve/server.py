@@ -30,8 +30,8 @@ def run_forever(finished):
     LCD1602.init(0x27, 1)
 
     while True:
-        LCD1602.write(0, 0, 'Temp: {:d}F'.format(sensor.get_fahrenheit()))
-        LCD1602.write(0, 1, '      {:d}C'.format(sensor.get_celsius()))
+        LCD1602.write(0, 0, 'Temp: {:d}F'.format(int(sensor.get_fahrenheit())))
+        LCD1602.write(0, 1, '      {:d}C'.format(int(sensor.get_celsius())))
         time.sleep(10)
 
         if finished.isSet():
