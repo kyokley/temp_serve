@@ -1,3 +1,7 @@
+import threading
+import time
+import LCD1602
+
 from flask import (Flask,
                    jsonify,
                    )
@@ -22,7 +26,26 @@ def get_temp():
            }
     return jsonify(res)
 
+def run_forever(finished):
+    LCD1602.init(0x27, 1)
+
+    while True:
+        LCD1602.write(0, 0, 'Fahrenheit: {}F'.format(sensor.get_fahrenheit()))
+        LCD1602.write(5, 1, 'Celsius: {}C'.format(sensor.get_celsius()))
+        time.sleep(10)
+
+        if finished.isSet():
+            break
+
 if __name__ == '__main__':
+    finished = threading.Event()
+
+    thread = threading.Thread(target=run_forever,
+                              args=(finished,))
+    thread.start()
+
     app.debug = True
     #app.run(host=HOST, port=PORT)
     app.run()
+
+    finished.set()
