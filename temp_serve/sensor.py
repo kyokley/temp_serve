@@ -48,9 +48,10 @@ class Sensor(object):
             temperaturedata = secondline.split(" ")[9]
             temperature = float(temperaturedata[2:])
             temperature = temperature / 1000.0
-            return temperature
-        else:
-            return self._cached_temp
+            self._cached_temp = temperature
+            self._last_update = datetime.now()
+
+        return self._cached_temp
 
     def get_celsius(self):
         return self._read()
